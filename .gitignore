@@ -1,0 +1,8 @@
+#ignore data files
+*.dat
+
+#ignore subdirectories
+*/*
+
+#conda environment file
+environment.yml
