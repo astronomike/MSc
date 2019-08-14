@@ -1,0 +1,14 @@
+#Values given in this file should be in the units
+#([m_x] = GeV/c^2, [m_vir] = M_sun, [d_l] = AU, mode = "ann" or "dec")
+#lines starting with '#' are ignored
+
+#halo properties
+profile = moore
+m_vir = 1
+d_l = 25.0241
+
+#WIMP properties
+m_x = 100
+channel = q
+cross section = 3e-26
+mode = ann
