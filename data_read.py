@@ -27,4 +27,3 @@ def read_d_lim_data(datafile):
 			d_lim.append(float(values[1]))
 			
 		return [m_vir_arr,d_lim]
-	
