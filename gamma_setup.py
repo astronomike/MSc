@@ -288,30 +288,39 @@ elif writing_or_plotting == "plotting":
 """Space for other random or temporary functions"""
 
 
-#plotting mass-distance relationship for different fluence thresholds
-hp = ["ucmh","moore"]
-S_arr = [100]
+#plotting mass-distance relationship for different fluence thresholds, wimp masses and halo profiles
+#variables to plot over
+hp = ["ucmh"]
+S_arr = [10,100,1000]
+mx_arr = [100]
+
 AU_to_pc = 1/206265
-M = np.logspace(np.log10(M_min),np.log10(M_max),N)
-distances = np.zeros((2,N))
-r_97_arr = np.zeros((2,N)) 
+M = np.logspace(np.log10(M_min),np.log10(M_max),N)  #halo mass range
+distances = np.zeros((3,N))  #distance array 
+r_97_arr = np.zeros((3,N))   #array for r_97 radius
 
-for i in range(np.size(hp)):    
-    df = open(hp[i] + "distance_table_s" + str(S_arr[0]) + "m" + str(m_x) + ".txt","r")
-    lines = df.readlines()
-    
-    #loop for each halo mass value in mass-distance table    
-    for j in range(np.size(lines)):
-        values = lines[j].split(" ")
-        distances[i,j] = float(values[1])
 
-        #create array of r_97 values for plot 
-        p = [m_x, M[j], ch, hp[i], d_l, ann_or_dec]
-        xx.setup(p)
-        xx.extension(d_l)
-        r_97_arr[i,j] = xx.r_97/AU_to_pc
-    df.close()
+#this plotting function assumes data files for distance-vs-mass are already created with the name format
+#"'hp'distance_table_s'threshold'm'wimpmass'.txt"
+for i in range(np.size(hp)):                #halo profile loop
+    for j in range(np.size(S_arr)):         #threshold loop  
+        for k in range(np.size(mx_arr)):    #wimp mass loop
+            
+            df = open(hp[i] + "distance_table_s" + str(S_arr[j]) + "m" + str(mx_arr[k]) + ".txt","r")
+            lines = df.readlines()
     
+            #loop for each halo mass value in mass-distance table    
+            for m in range(np.size(lines)):
+                values = lines[m].split(" ")
+                distances[j,m] = float(values[1])
+        
+                #create array of r_97 values for plot 
+                p = [mx_arr[k], M[m], ch, hp[i], d_l, ann_or_dec]
+                xx.setup(p)
+                xx.extension(d_l)
+                r_97_arr[j,m] = xx.r_97/AU_to_pc
+            df.close()
+            
 #print(distances[0])
 #ind = np.where(mass<=1e4)
 
@@ -321,7 +330,7 @@ for i in range(np.size(hp)):
 fig, ax = plt.subplots()
 ax.set_xscale('log')
 ax.set_yscale('log')
-ax.plot(M,distances[0],'k',M,distances[1],'k:',M,r_97_arr[0],'r',M,r_97_arr[1],'r:')
+ax.plot(M,distances[0],'k',M,distances[1],'k:',M,distances[2],'k--',M,r_97_arr[0])
 ax.legend([r"UCMH",r"Moore",r"r_97ucmh",r"r_97moore"])
 ax.set_ylabel(r'Distance (AU)')
 ax.set_xlabel(r'Halo Mass (M$_\odot$)')
