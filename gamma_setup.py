@@ -291,8 +291,8 @@ elif writing_or_plotting == "plotting":
 #plotting mass-distance relationship for different fluence thresholds, wimp masses and halo profiles
 #variables to plot over
 hp = ["ucmh"]
-S_arr = [10,100,1000]
-mx_arr = [100]
+S_arr = [100]
+mx_arr = [10,100,1000]
 
 AU_to_pc = 1/206265
 M = np.logspace(np.log10(M_min),np.log10(M_max),N)  #halo mass range
@@ -309,33 +309,33 @@ for i in range(np.size(hp)):                #halo profile loop
             df = open(hp[i] + "distance_table_s" + str(S_arr[j]) + "m" + str(mx_arr[k]) + ".txt","r")
             lines = df.readlines()
     
-            #loop for each halo mass value in mass-distance table    
+            #loop for each halo mass value in mass-distance table.
+            #change i,j,k in index for distance, r_97 array to the corresponding variable for the plot
             for m in range(np.size(lines)):
                 values = lines[m].split(" ")
-                distances[j,m] = float(values[1])
+                distances[k,m] = float(values[1])
         
                 #create array of r_97 values for plot 
                 p = [mx_arr[k], M[m], ch, hp[i], d_l, ann_or_dec]
                 xx.setup(p)
                 xx.extension(d_l)
-                r_97_arr[j,m] = xx.r_97/AU_to_pc
+                r_97_arr[k,m] = xx.r_97/AU_to_pc
             df.close()
-            
-#print(distances[0])
-#ind = np.where(mass<=1e4)
 
-
-    
+#only plot up to 1e4 solar mass halos            
+ind = np.where(M<=1e4)
 
 fig, ax = plt.subplots()
 ax.set_xscale('log')
 ax.set_yscale('log')
-ax.plot(M,distances[0],'k',M,distances[1],'k:',M,distances[2],'k--',M,r_97_arr[0])
-ax.legend([r"UCMH",r"Moore",r"r_97ucmh",r"r_97moore"])
+ax.plot(M[ind],distances[0][ind],'k',M[ind],distances[1][ind],'k--',M[ind],distances[2][ind],'k:')
+ax.plot(M[ind],r_97_arr[0][ind],'r',M[ind],r_97_arr[1][ind],'r--',M[ind],r_97_arr[2][ind],'r:',alpha=0.5)
+#ax.fill_between(M[ind], r_97_arr[0][ind], 2e-2, facecolor='red', alpha=0.3)
+ax.legend([r"m$_{\chi}$ = 10 GeV",r"m$_{\chi}$ = 100 GeV",r"m$_{\chi}$ = 1 TeV",r"< r$_{97}$"])
 ax.set_ylabel(r'Distance (AU)')
 ax.set_xlabel(r'Halo Mass (M$_\odot$)')
 fig.tight_layout()
-#fig.savefig("d-mcombined.pdf",dpi=600)
+fig.savefig("r_97ucmhmxalls100.pdf",dpi=600)
 
 
 
