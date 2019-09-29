@@ -102,7 +102,7 @@ z = 10                                              #estimated redshift when acc
 n = 500
 c_vir = set_c_vir(m_vir)
 r_vir = (0.019)*(1e3/(1+z))*(m_vir)**(1/3)              #virial radius of ucmh/moore-like profiles
-r_arr = np.logspace(np.log10(r_vir*1e-4),np.log10(r_vir),n)
+r_arr = np.logspace(np.log10(r_vir*1e-5),np.log10(r_vir),n)
 rho = np.zeros((np.size(halo_profiles),n))
 
 for i in range(np.size(halo_profiles)):
@@ -114,14 +114,18 @@ r_1 = np.max(r_arr)
 fig, ax = plt.subplots()
 ax.set_xscale('log')
 ax.set_yscale('log')
+
 ax.plot(r_arr/r_1,rho[0]/rho_1, 'red')
 ax.plot(r_arr/r_1,rho[1]/rho_1, 'darkmagenta')
-ax.plot(r_arr/r_1,rho[2]/rho_1, 'blue')
+ax.plot(r_arr/r_1,rho[2]/rho_1, 'mediumblue')
 #ax.plot(r_arr/r_1,rho[3]/rho_1, 'blue')
-#ax.axhline(y = rho_max/rho_1, color = 'gray', ls = ':')
-ax.legend(halo_profiles)
-ax.set_ylabel(r'$\rho$')
+
+#ax.set_ylim([1e-11,2e0])
+ax.axhline(y = rho_max/rho_1, color = 'black', alpha = 0.9, ls = ':')
+ax.text(0.4,4e-1,r"$\rho_{max}$")
+ax.legend(halo_profiles, loc = 0)
+
+ax.set_ylabel(r'density')
 ax.set_xlabel(r'radius')
-ax.ticklabel_format(axis='both', style='plain')
 fig.tight_layout()
-#fig.savefig("profilecomparison.pdf",dpi=600)
+fig.savefig("profilecomparison_full.pdf",dpi=600)
