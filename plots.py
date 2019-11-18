@@ -113,7 +113,7 @@ def plot_halocomparison():
     rho_1 = np.max(rho)
     r_1 = np.max(r_arr)
     
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(5,4))
     ax.set_xscale('log')
     ax.set_yscale('log')
     
@@ -125,10 +125,12 @@ def plot_halocomparison():
     #ax.set_ylim([1e-11,2e0])
     ax.axhline(y = rho_max/rho_1, color = 'black', alpha = 0.9, ls = ':')
     ax.text(0.4,4e-1,r"$\rho_{max}$")
-    ax.legend(halo_profiles, loc = 0)
+    ax.legend(halo_profiles, loc = 0, fontsize=12)
     
-    ax.set_ylabel(r'density')
-    ax.set_xlabel(r'radius')
+    ax.set_ylabel(r'$\rho\, /\, \rho_{\mathrm{max}}$',fontsize=14)
+    ax.set_xlabel(r'$r\, /\, R_{\mathrm{UCMH}}$',fontsize=14)
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
     fig.tight_layout()
     fig.savefig("profilecomparison_full.pdf",dpi=300)
 
@@ -169,11 +171,12 @@ def plot_spectra():
     #removing labels and tick labels for inner axes 
     fig.add_subplot(111, frameon=False)
     plt.grid(False)   
-    plt.tick_params(labelcolor='none', which='both', top='off', bottom='off', left='off', right='off') 
-    plt.xlabel(r'Energy (GeV)', fontsize=14, labelpad=10)    #labelpad for some extra spacing between axes label and tick labels
-    plt.ylabel(r'dN/dE (GeV$^{-1}$)', fontsize=14, labelpad=10)
-    plt.rcParams['xtick.labelsize'] = 12
-    plt.rcParams['ytick.labelsize'] = 12
+    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    
+    plt.xlabel(r'Energy (GeV)', fontsize=18, labelpad=10)    #labelpad for some extra spacing between axes label and tick labels
+    plt.ylabel(r'dN$_{\gamma}$/dE (GeV$^{-1}$)', fontsize=18, labelpad=10)
+    plt.rcParams['xtick.labelsize'] = 16
+    plt.rcParams['ytick.labelsize'] = 16
     
     """
     ax[0].set_xlim(1e-4,1e2)
@@ -181,6 +184,7 @@ def plot_spectra():
     ax[2].set_xlim(1e-4,1e2)
     """
     colours = ["b", "r", "g"]
+    channels = [r"$q\bar{q}$",r"$b\bar{b}$",r"$e^{\!+}\!e^{\!-}\!$"]
     titles = [r"$m_{\chi} = 10$ GeV",r"$m_{\chi} = 100$ GeV",r"$m_{\chi} = 1000$ GeV"]
     
     #get the data and plot each one
@@ -190,11 +194,11 @@ def plot_spectra():
             E = spec[0]
             dnde = spec[1]
             ax[j].plot(E,dnde,color=colours[i],linewidth=3)
-            ax[j].legend(ch_list)
-            ax[j].set_title(titles[j])
+            ax[j].legend(channels,fontsize=13)
+            ax[j].set_title(titles[j],fontsize=18)
     
     plt.tight_layout()
     plt.show()
-    fig.savefig("spectra.pdf",dpi=300)
+    fig.savefig("spectra.pdf",dpi=300, bbox_inches='tight')
 
-plot_spectra()
+#plot_spectra()
