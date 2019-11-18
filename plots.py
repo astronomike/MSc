@@ -117,9 +117,9 @@ def plot_halocomparison():
     ax.set_xscale('log')
     ax.set_yscale('log')
     
-    ax.plot(r_arr/r_1,rho[0]/rho_1, 'red')
-    ax.plot(r_arr/r_1,rho[1]/rho_1, 'darkmagenta')
-    ax.plot(r_arr/r_1,rho[2]/rho_1, 'mediumblue')
+    ax.plot(r_arr/r_1,rho[0]/rho_1, 'red', linewidth=2)
+    ax.plot(r_arr/r_1,rho[1]/rho_1, 'green', linewidth=2)
+    ax.plot(r_arr/r_1,rho[2]/rho_1, 'blue', linewidth=2)
     #ax.plot(r_arr/r_1,rho[3]/rho_1, 'blue')
     
     #ax.set_ylim([1e-11,2e0])
@@ -130,9 +130,9 @@ def plot_halocomparison():
     ax.set_ylabel(r'density')
     ax.set_xlabel(r'radius')
     fig.tight_layout()
-    fig.savefig("profilecomparison_full.pdf",dpi=600)
+    fig.savefig("profilecomparison_full.pdf",dpi=300)
 
-#plot_halocomparison()
+plot_halocomparison()
 
 """
 ###############################################################################
@@ -189,7 +189,7 @@ def plot_spectra():
             spec = get_spectrum(ch_list[i],m_list[j])
             E = spec[0]
             dnde = spec[1]
-            ax[j].plot(E,dnde,color=colours[i])
+            ax[j].plot(E,dnde,color=colours[i],linewidth=3)
             ax[j].legend(ch_list)
             ax[j].set_title(titles[j])
     
