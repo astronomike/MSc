@@ -95,37 +95,106 @@ def halo_density(hp,m_vir,r_vir,c_vir,r):
 
     return rho
 
-halo_profiles = ["UCMH", "Moore-like", "NFW"]
-#halo_profiles = ["ucmh", "nfw"]
-m_vir = 100
-z = 10                                              #estimated redshift when accretion stops
-n = 500
-c_vir = set_c_vir(m_vir)
-r_vir = (0.019)*(1e3/(1+z))*(m_vir)**(1/3)              #virial radius of ucmh/moore-like profiles
-r_arr = np.logspace(np.log10(r_vir*1e-5),np.log10(r_vir),n)
-rho = np.zeros((np.size(halo_profiles),n))
-
-for i in range(np.size(halo_profiles)):
-    rho[i] = halo_density(halo_profiles[i], m_vir, r_vir, c_vir, r_arr)
+def plot_halocomparison():
     
-rho_1 = np.max(rho)
-r_1 = np.max(r_arr)
+    halo_profiles = ["UCMH", "Moore-like", "NFW"]
+    #halo_profiles = ["ucmh", "nfw"]
+    m_vir = 100
+    z = 10                                              #estimated redshift when accretion stops
+    n = 500
+    c_vir = set_c_vir(m_vir)
+    r_vir = (0.019)*(1e3/(1+z))*(m_vir)**(1/3)              #virial radius of ucmh/moore-like profiles
+    r_arr = np.logspace(np.log10(r_vir*1e-5),np.log10(r_vir),n)
+    rho = np.zeros((np.size(halo_profiles),n))
+    
+    for i in range(np.size(halo_profiles)):
+        rho[i] = halo_density(halo_profiles[i], m_vir, r_vir, c_vir, r_arr)
+        
+    rho_1 = np.max(rho)
+    r_1 = np.max(r_arr)
+    
+    fig, ax = plt.subplots()
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    
+    ax.plot(r_arr/r_1,rho[0]/rho_1, 'red', linewidth=2)
+    ax.plot(r_arr/r_1,rho[1]/rho_1, 'green', linewidth=2)
+    ax.plot(r_arr/r_1,rho[2]/rho_1, 'blue', linewidth=2)
+    #ax.plot(r_arr/r_1,rho[3]/rho_1, 'blue')
+    
+    #ax.set_ylim([1e-11,2e0])
+    ax.axhline(y = rho_max/rho_1, color = 'black', alpha = 0.9, ls = ':')
+    ax.text(0.4,4e-1,r"$\rho_{max}$")
+    ax.legend(halo_profiles, loc = 0)
+    
+    ax.set_ylabel(r'density')
+    ax.set_xlabel(r'radius')
+    fig.tight_layout()
+    fig.savefig("profilecomparison_full.pdf",dpi=300)
 
-fig, ax = plt.subplots()
-ax.set_xscale('log')
-ax.set_yscale('log')
+plot_halocomparison()
 
-ax.plot(r_arr/r_1,rho[0]/rho_1, 'red')
-ax.plot(r_arr/r_1,rho[1]/rho_1, 'darkmagenta')
-ax.plot(r_arr/r_1,rho[2]/rho_1, 'mediumblue')
-#ax.plot(r_arr/r_1,rho[3]/rho_1, 'blue')
+"""
+###############################################################################
+Plots of annihilation spectra from dnde folder
+"""
 
-#ax.set_ylim([1e-11,2e0])
-ax.axhline(y = rho_max/rho_1, color = 'black', alpha = 0.9, ls = ':')
-ax.text(0.4,4e-1,r"$\rho_{max}$")
-ax.legend(halo_profiles, loc = 0)
+#inputs = (ch = channel string, m = WIMP mass)
+def get_spectrum(ch,m):
 
-ax.set_ylabel(r'density')
-ax.set_xlabel(r'radius')
-fig.tight_layout()
-fig.savefig("profilecomparison_full.pdf",dpi=600)
+    filename = "dnde/"+str(ch)+"_"+str(m)+"GeV.txt"
+    dnde = []
+    E = []
+
+    with open(filename,"r") as file:
+        lines = file.readlines()
+        for i in range(np.size(lines)):
+            if i == 0:
+                continue #skip header line
+            col = lines[i].split()
+            E.append(float(col[0]))
+            dnde.append(float(col[1]))
+
+    spec = [np.array(E),np.array(dnde)]
+    return spec
+
+def plot_spectra():
+    
+    ch_list = ['q','b','e']    
+    m_list = [10,100,1000]
+    
+    #create main subplot
+    fig, ax = plt.subplots(1,3, figsize=(15,6) ,sharey='row', subplot_kw=dict(xscale='log', yscale='log', xlim=(1e-4,1e2), ylim=(1e-1,1e2)))
+    
+    #removing labels and tick labels for inner axes 
+    fig.add_subplot(111, frameon=False)
+    plt.grid(False)   
+    plt.tick_params(labelcolor='none', which='both', top='off', bottom='off', left='off', right='off') 
+    plt.xlabel(r'Energy (GeV)', fontsize=14, labelpad=10)    #labelpad for some extra spacing between axes label and tick labels
+    plt.ylabel(r'dN/dE (GeV$^{-1}$)', fontsize=14, labelpad=10)
+    plt.rcParams['xtick.labelsize'] = 12
+    plt.rcParams['ytick.labelsize'] = 12
+    
+    """
+    ax[0].set_xlim(1e-4,1e2)
+    ax[1].set_xlim(1e-4,1e2)
+    ax[2].set_xlim(1e-4,1e2)
+    """
+    colours = ["b", "r", "g"]
+    titles = [r"$m_{\chi} = 10$ GeV",r"$m_{\chi} = 100$ GeV",r"$m_{\chi} = 1000$ GeV"]
+    
+    #get the data and plot each one
+    for j in range(np.size(m_list)):
+        for i in range(np.size(ch_list)):
+            spec = get_spectrum(ch_list[i],m_list[j])
+            E = spec[0]
+            dnde = spec[1]
+            ax[j].plot(E,dnde,color=colours[i],linewidth=3)
+            ax[j].legend(ch_list)
+            ax[j].set_title(titles[j])
+    
+    plt.tight_layout()
+    plt.show()
+    fig.savefig("spectra.pdf",dpi=300)
+
+plot_spectra()

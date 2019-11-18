@@ -3,7 +3,7 @@
 #lines starting with '#' are ignored
 
 #halo properties
-profile = moore
+profile = ucmh
 m_vir = 1
 d_l = 25.0241
 
