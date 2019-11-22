@@ -134,7 +134,7 @@ def plot_halocomparison():
     fig.tight_layout()
     fig.savefig("profilecomparison_full.pdf",dpi=300)
 
-plot_halocomparison()
+#plot_halocomparison()
 
 """
 ###############################################################################
@@ -184,6 +184,7 @@ def plot_spectra():
     ax[2].set_xlim(1e-4,1e2)
     """
     colours = ["b", "r", "g"]
+    linestyles = ["--", "-", "-."]
     channels = [r"$q\bar{q}$",r"$b\bar{b}$",r"$e^{\!+}\!e^{\!-}\!$"]
     titles = [r"$m_{\chi} = 10$ GeV",r"$m_{\chi} = 100$ GeV",r"$m_{\chi} = 1000$ GeV"]
     
@@ -193,12 +194,12 @@ def plot_spectra():
             spec = get_spectrum(ch_list[i],m_list[j])
             E = spec[0]
             dnde = spec[1]
-            ax[j].plot(E,dnde,color=colours[i],linewidth=3)
+            ax[j].plot(E,dnde,color=colours[i],linewidth=2,linestyle=linestyles[i])
             ax[j].legend(channels,fontsize=13)
             ax[j].set_title(titles[j],fontsize=18)
     
     plt.tight_layout()
     plt.show()
-    fig.savefig("spectra.pdf",dpi=300, bbox_inches='tight')
+    #fig.savefig("spectra.pdf",dpi=300, bbox_inches='tight')
 
-#plot_spectra()
+plot_spectra()
