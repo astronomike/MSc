@@ -25,7 +25,7 @@ GeVcm_to_Msunpc = 1/37.96               #conversion from GeV/cm^3 to M_sun/pc^3
 age = (t - ti)*(y_to_s)
 rho_max = m_x/(ann_cs*age)              #[rho_max] = GeV/cm^3
 rho_max = rho_max*GeVcm_to_Msunpc       #[rho_max] = Msun/pc^3
-print(rho_max)
+#print(rho_max)
 
 
 def set_c_vir(m):
@@ -116,25 +116,26 @@ def plot_halocomparison():
     fig, ax = plt.subplots(figsize=(5,4))
     ax.set_xscale('log')
     ax.set_yscale('log')
+
+    ax.axhline(y = rho_max/rho_1, color = 'black', linewidth = 0.9, alpha = 1, ls = ':', label='_nolegend_')
     
-    ax.plot(r_arr/r_1,rho[0]/rho_1, 'red', linewidth=2)
-    ax.plot(r_arr/r_1,rho[1]/rho_1, 'green', linewidth=2)
-    ax.plot(r_arr/r_1,rho[2]/rho_1, 'blue', linewidth=2)
+    ax.plot(r_arr/r_1,rho[0]/rho_1, 'red', linestyle = "-")  #ucmh
+    ax.plot(r_arr/r_1,rho[1]/rho_1, 'blue', linestyle = "--")    #moore-like
+    ax.plot(r_arr/r_1,rho[2]/rho_1, 'black', linestyle = "-.")     #nfw
     #ax.plot(r_arr/r_1,rho[3]/rho_1, 'blue')
-    
     #ax.set_ylim([1e-11,2e0])
-    ax.axhline(y = rho_max/rho_1, color = 'black', alpha = 0.9, ls = ':')
+
     ax.text(0.4,4e-1,r"$\rho_{max}$")
-    ax.legend(halo_profiles, loc = 0, fontsize=12)
-    
+    ax.legend(halo_profiles, loc = 0, fontsize=12)    
     ax.set_ylabel(r'$\rho\, /\, \rho_{\mathrm{max}}$',fontsize=14)
     ax.set_xlabel(r'$r\, /\, R_{\mathrm{UCMH}}$',fontsize=14)
     plt.rcParams['xtick.labelsize'] = 12
     plt.rcParams['ytick.labelsize'] = 12
     fig.tight_layout()
+    plt.show()
     fig.savefig("profilecomparison_full.pdf",dpi=300)
 
-#plot_halocomparison()
+plot_halocomparison()
 
 """
 ###############################################################################
@@ -183,7 +184,7 @@ def plot_spectra():
     ax[1].set_xlim(1e-4,1e2)
     ax[2].set_xlim(1e-4,1e2)
     """
-    colours = ["b", "r", "g"]
+    colours = ["blue", "deeppink", "forestgreen"]
     linestyles = ["--", "-", "-."]
     channels = [r"$q\bar{q}$",r"$b\bar{b}$",r"$e^{\!+}\!e^{\!-}\!$"]
     titles = [r"$m_{\chi} = 10$ GeV",r"$m_{\chi} = 100$ GeV",r"$m_{\chi} = 1000$ GeV"]
@@ -202,4 +203,4 @@ def plot_spectra():
     plt.show()
     #fig.savefig("spectra.pdf",dpi=300, bbox_inches='tight')
 
-plot_spectra()
+#plot_spectra()
