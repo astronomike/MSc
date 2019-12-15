@@ -340,8 +340,8 @@ class annihilation:
         F = j*prefac*dnde*self.extension(self.d_l)      #[F] = GeV^-1.cm^-2.s^-1
         F = F*E**2                                      #[F] = GeV.cm^-2.s^-1
 
-        E = E*1e3                                       #[E] = MeV
-        F = F*1e3                                       #[F] = MeV.cm^-2.s^-1
+        #E = E*1e3                                       #[E] = MeV
+        #F = F*1e3                                       #[F] = MeV.cm^-2.s^-1
 
         #GeV_to_erg = (1e9)*(1.602e-19)*(1e7)
         """fluence test"""

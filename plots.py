@@ -5,6 +5,7 @@ File to create peripheral results like flux and density plots
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.integrate as integrate
+import dm_annihilation
 
 #Planck 2015 parameters
 w_m = 0.308     #matter density parameter
@@ -135,7 +136,7 @@ def plot_halocomparison():
     plt.show()
     fig.savefig("profilecomparison_full.pdf",dpi=300)
 
-plot_halocomparison()
+#plot_halocomparison()
 
 """
 ###############################################################################
@@ -204,3 +205,55 @@ def plot_spectra():
     #fig.savefig("spectra.pdf",dpi=300, bbox_inches='tight')
 
 #plot_spectra()
+    
+
+def plot_flux():
+    
+    ch_list = ['q','b','e']    
+    m_list = [10,100,1000]
+    xx = dm_annihilation.annihilation()
+  
+    #create main subplot
+    fig, ax = plt.subplots(1,3, figsize=(15,6) ,sharey='row', subplot_kw=dict(xscale='log', yscale='log'))
+    
+    #removing labels and tick labels for inner axes 
+    fig.add_subplot(111, frameon=False)
+    plt.grid(False)   
+    plt.tick_params(labelcolor='none', which='both', top=False, bottom=False, left=False, right=False)
+    
+    plt.xlabel(r'Energy (GeV)', fontsize=18, labelpad=10)    #labelpad for some extra spacing between axes label and tick labels
+    plt.ylabel(r'd$\Phi$/dE (GeV cm$^{-2}$ s$^{-1}$)', fontsize=18, labelpad=10)
+    plt.rcParams['xtick.labelsize'] = 16
+    plt.rcParams['ytick.labelsize'] = 16
+    
+    """
+    ax[0].set_xlim(1e-4,1e2)
+    ax[1].set_xlim(1e-4,1e2)
+    ax[2].set_xlim(1e-4,1e2)
+    """
+    colours = ["blue", "deeppink", "forestgreen"]
+    linestyles = ["--", "-", "-."]
+    channels = [r"$q\bar{q}$",r"$b\bar{b}$",r"$e^{\!+}\!e^{\!-}\!$"]
+    titles = [r"$m_{\chi} = 10$ GeV",r"$m_{\chi} = 100$ GeV",r"$m_{\chi} = 1000$ GeV"]
+    
+    #get the data and plot each one
+    for j in range(np.size(m_list)):
+        for i in range(np.size(ch_list)):
+            #spec = get_spectrum(ch_list[i],m_list[j])
+            #E = spec[0]
+            #dnde = spec[1]
+            par_arr = [m_list[j],100,ch_list[i],'ucmh',1000,'dec']
+            xx.setup(par_arr)          
+            [E,F] = xx.flux()
+            
+            ax[j].plot(E,F,color=colours[i],linewidth=2,linestyle=linestyles[i])
+            ax[j].legend(channels,fontsize=13,loc=2)
+            ax[j].set_title(titles[j],fontsize=18)
+            ax[j].set_ylim([np.max(F)*1e-4,np.max(F)*1e2])
+            ax[j].set_xlim([np.max(E)*1e-5,np.max(E)])
+            
+    plt.tight_layout()
+    plt.show()
+    fig.savefig("fluxes_decay.pdf",dpi=300, bbox_inches='tight')
+
+plot_flux()

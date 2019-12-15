@@ -252,10 +252,11 @@ elif read_or_write == "read":
 #for plotting selected values of m and multiple fluences
 s_thresh_arr = [10,100,1000]
 s_thresh_legend = ["10 kJ/m$^2$","100 kJ/m$^2$","1 MJ/m$^2$"]
-s_thresh_colours = ["r","brown","k"]
+s_thresh_colours = ["k","k","k"]
 s_thresh_linestyle = ["-","--",":"]
+m_thresh_legend = [r"m$_{\chi} = $ 10 GeV",r"m$_{\chi} = $ 100 GeV",r"m$_{\chi} = $ 1 TeV"]
 
-writing_or_plotting = "test"
+writing_or_plotting = "plotting"
 
 if writing_or_plotting == "writing":
     #for generating and writing the data to an external file:
@@ -263,14 +264,14 @@ if writing_or_plotting == "writing":
     data_write.write_d_lim_data(m_vir_arr,d_lim_arr,s_thresh_arr[1],del_t,m_x_arr[0],xx.ann_or_dec)
 elif writing_or_plotting == "plotting":
     #for reading the saved data and plotting:
-    plt.figure(1,figsize=(6,6))
+    plt.figure(1,figsize=(6,4))
     plt.xlabel('$M_{halo}$ ($M_{\odot}$)')
-    plt.ylabel('Impact Parameter (AU)')
+    plt.ylabel('Distance (AU)')
     plt.tick_params(axis='both', which='major', labelsize=12)
     plt.tick_params(axis='both', which='minor', labelsize=8)
-    plt.title('Minimum distance of UCMH required to produce \n gamma-ray fluence\n')
+    #plt.title('Minimum distance of UCMH required to produce \n gamma-ray fluence\n')
     i = 0
-    m_x_arr = [1000]
+    m_x_arr = [10,100,1000]
     s_thresh_arr = [100]
     for m_x in m_x_arr:
         for s in s_thresh_arr:
@@ -279,67 +280,72 @@ elif writing_or_plotting == "plotting":
             y = np.array(val[1])
             plt.plot(x,y,color=s_thresh_colours[i],linestyle=s_thresh_linestyle[i])
             i += 1
-    plt.legend(s_thresh_legend)
-    plt.text(50, 49, r"$m_\chi = {}$ TeV, t = 10 days".format(10), verticalalignment = "top", horizontalalignment = "center")
-    plt.savefig("fluence_thresh_sall_m10000_t10d.png",dpi = 600)
+    plt.legend(m_thresh_legend)
+    plt.text(-2, 260, r"$F = 100$ kJ/m$^2$")
+    plt.savefig("fluence_thresh_s100_mall_t10d.png",dpi = 600)
     plt.show()
 
 #%%
 """Space for other random or temporary functions"""
 
-
 #plotting mass-distance relationship for different fluence thresholds, wimp masses and halo profiles
 #variables to plot over
 hp = ["ucmh"]
-S_arr = [100]
-mx_arr = [10,100,1000]
+S_arr = [10,100,1000]
+mx_arr = [100]
 
 AU_to_pc = 1/206265
 M = np.logspace(np.log10(M_min),np.log10(M_max),N)  #halo mass range
 distances = np.zeros((3,N))  #distance array 
 r_97_arr = np.zeros((3,N))   #array for r_97 radius
 
-
-#this plotting function assumes data files for distance-vs-mass are already created with the name format
-#"'hp'distance_table_s'threshold'm'wimpmass'.txt"
-for i in range(np.size(hp)):                #halo profile loop
-    for j in range(np.size(S_arr)):         #threshold loop  
-        for k in range(np.size(mx_arr)):    #wimp mass loop
-            
-            df = open(hp[i] + "distance_table_s" + str(S_arr[j]) + "m" + str(mx_arr[k]) + ".txt","r")
-            lines = df.readlines()
+#writing mass-distance tables
+write_or_plot = "none"
+if write_or_plot == "write": 
+    dm_array = d_table(M, S_arr[0])
+    outfile_name = hp[0] + "distance_table_s" + str(S_arr[0]) + "m" + str(mx_arr[2]) + ".txt"
+    outfile = open(outfile_name,"w")
+    AU = 149e6 #AU in km 	
+    for i in range(np.size(m_vir_arr)):
+        line = str(M[i]) + " " + str(dm_array[1][i]) + "\n" 
+        outfile.writelines(line)
     
-            #loop for each halo mass value in mass-distance table.
-            #change i,j,k in index for distance, r_97 array to the corresponding variable for the plot
-            for m in range(np.size(lines)):
-                values = lines[m].split(" ")
-                distances[k,m] = float(values[1])
+    outfile.close()    
+elif write_or_plot == "plot": 
+    #this plotting function assumes data files for distance-vs-mass are already created with the name format
+    #"'hp'distance_table_s'threshold'm'wimpmass'.txt"
+    for i in range(np.size(hp)):                #halo profile loop
+        for j in range(np.size(S_arr)):         #threshold loop  
+            for k in range(np.size(mx_arr)):    #wimp mass loop
+                
+                df = open(hp[i] + "distance_table_s" + str(S_arr[j]) + "m" + str(mx_arr[k]) + ".txt","r")
+                lines = df.readlines()
         
-                #create array of r_97 values for plot 
-                p = [mx_arr[k], M[m], ch, hp[i], d_l, ann_or_dec]
-                xx.setup(p)
-                xx.extension(d_l)
-                r_97_arr[k,m] = xx.r_97/AU_to_pc
-            df.close()
-
-#only plot up to 1e4 solar mass halos            
-ind = np.where(M<=1e4)
-
-fig, ax = plt.subplots()
-ax.set_xscale('log')
-ax.set_yscale('log')
-ax.plot(M[ind],distances[0][ind],'k',M[ind],distances[1][ind],'k--',M[ind],distances[2][ind],'k:')
-ax.plot(M[ind],r_97_arr[0][ind],'r',M[ind],r_97_arr[1][ind],'r--',M[ind],r_97_arr[2][ind],'r:',alpha=0.5)
-#ax.fill_between(M[ind], r_97_arr[0][ind], 2e-2, facecolor='red', alpha=0.3)
-ax.legend([r"m$_{\chi}$ = 10 GeV",r"m$_{\chi}$ = 100 GeV",r"m$_{\chi}$ = 1 TeV",r"< r$_{97}$"])
-ax.set_ylabel(r'Distance (AU)')
-ax.set_xlabel(r'Halo Mass (M$_\odot$)')
-fig.tight_layout()
-fig.savefig("r_97ucmhmxalls100.pdf",dpi=600)
-
-
-
-
-
-
-
+                #loop for each halo mass value in mass-distance table.
+                #change i,j,k in index for distance, r_97 array to the corresponding variable for the plot
+                for m in range(np.size(lines)):
+                    values = lines[m].split(" ")
+                    distances[j,m] = float(values[1])
+            
+                    #create array of r_97 values for plot 
+                    p = [mx_arr[k], M[m], ch, hp[i], d_l, ann_or_dec]
+                    xx.setup(p)
+                    xx.extension(d_l)
+                    r_97_arr[k,m] = xx.r_97/AU_to_pc
+                df.close()
+    
+    #only plot up to 1e4 solar mass halos            
+    ind = np.where(np.logical_and(M>=1e-5,M<=1e4))[0]
+    
+    fig, ax = plt.subplots(figsize=(6,4))
+    ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.plot(M[ind],distances[0][ind],'k',M[ind],distances[1][ind],'k--',M[ind],distances[2][ind],'k:')
+    #ax.plot(M[ind],r_97_arr[0][ind],'r',M[ind],r_97_arr[1][ind],'r--',M[ind],r_97_arr[2][ind],'r:',alpha=0.5)
+    ax.fill_between(M[ind], r_97_arr[0][ind], 2e-2, facecolor='red', alpha=0.3)
+    #ax.legend([r"m$_{\chi}$ = 10 GeV",r"m$_{\chi}$ = 100 GeV",r"m$_{\chi}$ = 1 TeV",r"< r$_{97}$"])
+    ax.legend([r"10 kJ/m$^2$",r"100 kJ/m$^2$",r"1 MJ/m$^2$",r"< r$_{97}$"])
+    ax.set_ylabel(r'Distance (AU)')
+    ax.set_xlabel(r'Halo Mass (M$_\odot$)')
+    fig.tight_layout()
+    fig.savefig("r_97"+hp[0]+"mx100sall.pdf",dpi=600)
