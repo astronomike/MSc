@@ -16,6 +16,8 @@ Included files and their functions -
   * _dm\_annihilation.py_ contains all cosmological parameters, the class and function definitions for all physical quantities, calculations involving gamma ray fluxes from dark matter annihilation/decay and calculations describing the mass-distribution of various DM sub-halos. 
 
   * _data\_read.py_ & _data\_write.py_ include data manipulation tools for reading and writing spectra/results files. 
+  
+  * _plots.py_ includes methods for plotting and visualising results of fluxes and distance-mass curves.
 
   * _environments.yml_ is the python virtual environment file.
 
