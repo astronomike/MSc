@@ -256,4 +256,79 @@ def plot_flux():
     plt.show()
     fig.savefig("fluxes_decay.pdf",dpi=300, bbox_inches='tight')
 
-plot_flux()
+#plot_flux()
+
+
+"""
+#########################################################################################################
+UV absorption cross section
+"""
+
+def plot_ozoneapsorption():
+    lambda_ozone = np.array([238.27, 245.8, 253.7, 263.6, 272.0902, 281.3286, 289.3598, 296.7284, 302.1500, 314.1332, 322.0719, 334.24, 344.35])
+    sigma = np.array([7.51e-18, 1.006e-17, 1.154e-17, 9.66e-18, 6.70e-18, 3.31e-18, 1.402e-18, 5.60e-19, 2.65e-19, 4.86e-20, 2.15e-20, 3.11e-21, 0.974e-21])
+    
+    fig, ax = plt.subplots(figsize=(5,4))
+    #ax.set_xscale('log')
+    ax.set_yscale('log')
+    ax.plot(lambda_ozone,sigma, 'k')    
+    ax.set_ylabel(r'$\sigma_{\mathrm{abs}} \, (\mathrm{cm^2})$',fontsize=14)
+    ax.set_xlabel("Wavelength (nm)",fontsize=14)
+    ax.axvspan(280, 315, alpha=0.3, color='blue')
+    ax.text(292,1e-21,"UV-B",fontsize=12)
+    ax.text(322,1e-21,"UV-A",fontsize=12)
+    ax.text(260,1e-21,"UV-C",fontsize=12)
+    fig.tight_layout()
+    plt.show()
+    fig.savefig("ozone_absorption.pdf",dpi=300)
+    
+plot_ozoneapsorption()
+
+
+"""
+#########################################################################################################
+extension factor comparison
+"""
+
+def extension(): 
+    
+    
+    AU_to_km = 149e6
+    km_to_pc = 1/3.0857e13
+    xx = dm_annihilation.annihilation()
+    
+    mx = 100    #WIMP mass in GeV
+    M = 100     #halo mass in solar masses
+    ch = 'q'    #channel (kinda irrelevant here)
+    mode = 'ann'
+    halo_profiles = ["ucmh", "moore"]
+    d_arr = np.logspace(np.log10(1),np.log(100),1000)*AU_to_km*km_to_pc
+    ext = np.zeros(np.size(d_arr))
+   
+    
+    fig, ax = plt.subplots(figsize=(5,4))
+    ax.set_xscale('log')
+    ax.set_yscale('log')   
+    ax.axhline(y = 1, color = 'black', linewidth = 0.9, alpha = 1, ls = ':', label='_nolegend_')
+    
+    plt.rcParams["mathtext.fontset"] = "cm" #to get the right looking epsilon
+    ax.set_ylabel(r'Extension $\epsilon$',fontsize=14)
+    ax.set_xlabel('Distance (AU)',fontsize=14)   
+    colours = ['k','k'] 
+    linestyles = ['-', '--']
+    j = 0
+    for hp in halo_profiles:
+         p = [mx,M,ch,hp,1,mode] 
+         xx.setup(p)   
+         for i in range(np.size(d_arr)):
+             #print(d_arr[i])
+             ext[i] = xx.extension(d_arr[i])
+         ax.plot(d_arr*1/(AU_to_km*km_to_pc),ext, color=colours[j],linestyle=linestyles[j])
+         j = j+1
+
+    ax.legend(["UCMH", "Moore-like"], loc=(0.65,0.6))
+    fig.tight_layout()
+    plt.show()
+    fig.savefig("extension.pdf",dpi=300)
+
+#extension()
