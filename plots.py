@@ -98,7 +98,7 @@ def halo_density(hp,m_vir,r_vir,c_vir,r):
 
 def plot_halocomparison():
     
-    halo_profiles = ["UCMH", "Moore-like", "NFW"]
+    halo_profiles = ["UCMH", "Moore-like"]
     #halo_profiles = ["ucmh", "nfw"]
     m_vir = 100
     z = 10                                              #estimated redshift when accretion stops
@@ -120,9 +120,9 @@ def plot_halocomparison():
 
     ax.axhline(y = rho_max/rho_1, color = 'black', linewidth = 0.9, alpha = 1, ls = ':', label='_nolegend_')
     
-    ax.plot(r_arr/r_1,rho[0]/rho_1, 'red', linestyle = "-")  #ucmh
-    ax.plot(r_arr/r_1,rho[1]/rho_1, 'blue', linestyle = "--")    #moore-like
-    ax.plot(r_arr/r_1,rho[2]/rho_1, 'black', linestyle = "-.")     #nfw
+    ax.plot(r_arr/r_1,rho[0]/rho_1, 'k', linestyle = "-")  #ucmh
+    ax.plot(r_arr/r_1,rho[1]/rho_1, 'k', linestyle = "--")    #moore-like
+    #ax.plot(r_arr/r_1,rho[2]/rho_1, 'black', linestyle = "-.")     #nfw
     #ax.plot(r_arr/r_1,rho[3]/rho_1, 'blue')
     #ax.set_ylim([1e-11,2e0])
 
@@ -136,7 +136,7 @@ def plot_halocomparison():
     plt.show()
     fig.savefig("profilecomparison_full.pdf",dpi=300)
 
-#plot_halocomparison()
+plot_halocomparison()
 
 """
 ###############################################################################
@@ -242,19 +242,20 @@ def plot_flux():
             #spec = get_spectrum(ch_list[i],m_list[j])
             #E = spec[0]
             #dnde = spec[1]
-            par_arr = [m_list[j],100,ch_list[i],'ucmh',1000,'dec']
+            par_arr = [m_list[j],100,ch_list[i],'moore',1000,'ann']
             xx.setup(par_arr)          
             [E,F] = xx.flux()
             
             ax[j].plot(E,F,color=colours[i],linewidth=2,linestyle=linestyles[i])
             ax[j].legend(channels,fontsize=13,loc=2)
             ax[j].set_title(titles[j],fontsize=18)
-            ax[j].set_ylim([np.max(F)*1e-4,np.max(F)*1e2])
+            #ax[j].set_ylim([np.max(F)*1e-4,np.max(F)*1e2])
+            ax[j].set_ylim([1e-2,3e2])
             ax[j].set_xlim([np.max(E)*1e-5,np.max(E)])
             
     plt.tight_layout()
     plt.show()
-    fig.savefig("fluxes_decay.pdf",dpi=300, bbox_inches='tight')
+    fig.savefig("fluxes_moore.pdf",dpi=300, bbox_inches='tight')
 
 #plot_flux()
 
@@ -282,7 +283,7 @@ def plot_ozoneapsorption():
     plt.show()
     fig.savefig("ozone_absorption.pdf",dpi=300)
     
-plot_ozoneapsorption()
+#plot_ozoneapsorption()
 
 
 """

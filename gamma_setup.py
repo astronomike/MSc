@@ -64,7 +64,13 @@ days = 24*hour
 del_t = 5*days               #half time interval for clump movement ([del_t] = s)
 v_c = 300                    #clump velocity ([v_c] = km/s)
 
-
+xx.setup([1000,100,'q','moore',1000,'ann'])
+AU_to_km = 149e6
+km_to_pc = 1/3.0857e13
+dist_check = 1000 #AU
+ext_check = xx.extension(dist_check*AU_to_km*km_to_pc)
+print(par_arr)
+print(ext_check)
 """
 ################################################################################################################################
 calculation and plotting functions
@@ -256,7 +262,7 @@ s_thresh_colours = ["k","k","k"]
 s_thresh_linestyle = ["-","--",":"]
 m_thresh_legend = [r"m$_{\chi} = $ 10 GeV",r"m$_{\chi} = $ 100 GeV",r"m$_{\chi} = $ 1 TeV"]
 
-writing_or_plotting = "plotting"
+writing_or_plotting = "none"
 
 if writing_or_plotting == "writing":
     #for generating and writing the data to an external file:
@@ -291,8 +297,8 @@ elif writing_or_plotting == "plotting":
 #plotting mass-distance relationship for different fluence thresholds, wimp masses and halo profiles
 #variables to plot over
 hp = ["ucmh"]
-S_arr = [10,100,1000]
-mx_arr = [100]
+S_arr = [100]
+mx_arr = [10,100,1000]
 
 AU_to_pc = 1/206265
 M = np.logspace(np.log10(M_min),np.log10(M_max),N)  #halo mass range
@@ -325,7 +331,7 @@ elif write_or_plot == "plot":
                 #change i,j,k in index for distance, r_97 array to the corresponding variable for the plot
                 for m in range(np.size(lines)):
                     values = lines[m].split(" ")
-                    distances[j,m] = float(values[1])
+                    distances[k,m] = float(values[1])
             
                     #create array of r_97 values for plot 
                     p = [mx_arr[k], M[m], ch, hp[i], d_l, ann_or_dec]
@@ -341,11 +347,11 @@ elif write_or_plot == "plot":
     ax.set_xscale('log')
     ax.set_yscale('log')
     ax.plot(M[ind],distances[0][ind],'k',M[ind],distances[1][ind],'k--',M[ind],distances[2][ind],'k:')
-    #ax.plot(M[ind],r_97_arr[0][ind],'r',M[ind],r_97_arr[1][ind],'r--',M[ind],r_97_arr[2][ind],'r:',alpha=0.5)
-    ax.fill_between(M[ind], r_97_arr[0][ind], 2e-2, facecolor='red', alpha=0.3)
-    #ax.legend([r"m$_{\chi}$ = 10 GeV",r"m$_{\chi}$ = 100 GeV",r"m$_{\chi}$ = 1 TeV",r"< r$_{97}$"])
-    ax.legend([r"10 kJ/m$^2$",r"100 kJ/m$^2$",r"1 MJ/m$^2$",r"< r$_{97}$"])
+    ax.plot(M[ind],r_97_arr[0][ind],'r',M[ind],r_97_arr[1][ind],'r--',M[ind],r_97_arr[2][ind],'r:',alpha=0.5)
+    #ax.fill_between(M[ind], r_97_arr[0][ind], 2e-2, facecolor='red', alpha=0.3)
+    ax.legend([r"m$_{\chi}$ = 10 GeV",r"m$_{\chi}$ = 100 GeV",r"m$_{\chi}$ = 1 TeV",r"r$_{95}$"])
+    #ax.legend([r"F = 10 kJ/m$^2$",r"F = 100 kJ/m$^2$",r"F = 1 MJ/m$^2$",r"< r$_{95}$"])
     ax.set_ylabel(r'Distance (AU)')
     ax.set_xlabel(r'Halo Mass (M$_\odot$)')
     fig.tight_layout()
-    fig.savefig("r_97"+hp[0]+"mx100sall.pdf",dpi=600)
+    fig.savefig("r_97"+hp[0]+"mxalls100.pdf",dpi=600)
